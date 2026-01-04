@@ -33,12 +33,40 @@ const COLORS = [
   "hsl(280, 65%, 60%)",
 ];
 
+
+
+const statusMap: Record<string, string> = {
+  pending: "В обработке",
+  confirmed: "Подтвержден",
+  processing: "Сборка",
+  shipped: "Отправлен",
+  delivered: "Доставлен",
+  cancelled: "Отменен",
+};
+
+const getStatusLabel = (status: string) => {
+  const normalizedStatus = status.toLowerCase();
+  return statusMap[normalizedStatus] || status;
+};
+
+const getStatusColor = (status: string) => {
+  const normalized = status.toLowerCase();
+  switch (normalized) {
+    case 'delivered': return 'text-success';
+    case 'shipped': return 'text-info';
+    case 'pending': return 'text-warning';
+    case 'cancelled': return 'text-destructive';
+    case 'confirmed': return 'text-blue-500';
+    default: return 'text-primary';
+  }
+};
+
 const Dashboard = () => {
   const { data: overview } = useQuery({
     queryKey: ["overview"],
     queryFn: statsApi.overview,
   });
-  
+
 
   const { data: salesData = [] } = useQuery({
     queryKey: ["sales"],
@@ -58,45 +86,61 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Dashboard"
-        description="Welcome back! Here's what's happening with your store."
+        title="Панель управления"
+        description="Добро пожаловать! Вот что происходит в вашем магазине."
       />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Total Products"
-          value={overview?.totalProducts}
-          change="+12% from last month"
-          changeType="positive"
+          title="Всего товаров"
+          value={overview?.totalProducts ?? 0}
+          change="—"
+          changeType="neutral"
           icon={Package}
           iconColor="bg-primary/10 text-primary"
         />
+
         <StatsCard
-          title="Total Orders"
-          value={overview?.totalOrders}
-          change="+8% from last month"
-          changeType="positive"
+          title="Всего заказов"
+          value={overview?.totalOrders ?? 0}
+          change="—"
+          changeType="neutral"
           icon={ShoppingCart}
           iconColor="bg-success/10 text-success"
         />
+
         <StatsCard
-          title="New Users"
-          value={overview?.newUsers}
-          change="-3% from last month"
-          changeType="negative"
+          title="Новые пользователи"
+          value={overview?.newUsers?.value ?? 0}
+          change={
+            overview?.newUsers
+              ? `${overview.newUsers.percent}% с прошлого месяца`
+              : '—'
+          }
+          changeType={overview?.newUsers?.type ?? 'neutral'}
           icon={Users}
           iconColor="bg-warning/10 text-warning"
         />
+
         <StatsCard
-          title="Revenue"
-          value={overview?.revenue}
-          change="+15% from last month"
-          changeType="positive"
+          title="Выручка"
+          value={
+            overview?.revenue
+              ? `${overview.revenue.value.toLocaleString()} ₽`
+              : '0 ₽'
+          }
+          change={
+            overview?.revenue
+              ? `${overview.revenue.percent}% с прошлого месяца`
+              : '—'
+          }
+          changeType={overview?.revenue?.type ?? 'neutral'}
           icon={DollarSign}
           iconColor="bg-info/10 text-info"
         />
       </div>
+
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -105,10 +149,10 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold text-card-foreground">
-                Sales Overview
+                Обзор продаж
               </h3>
               <p className="text-sm text-muted-foreground">
-                Monthly revenue and orders
+                Ежемесячная выручка и заказы
               </p>
             </div>
             <div className="flex items-center gap-2 text-sm text-success">
@@ -172,10 +216,10 @@ const Dashboard = () => {
         <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-card-foreground">
-              Sales by Category
+              Продажи по категориям
             </h3>
             <p className="text-sm text-muted-foreground">
-              Product distribution
+              Распределение товаров
             </p>
           </div>
           <div className="h-64">
@@ -227,9 +271,9 @@ const Dashboard = () => {
         <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-card-foreground">
-              Orders Overview
+              Обзор заказов
             </h3>
-            <p className="text-sm text-muted-foreground">Monthly order count</p>
+            <p className="text-sm text-muted-foreground">Количество заказов за месяц</p>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -265,10 +309,10 @@ const Dashboard = () => {
         <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-card-foreground">
-              Recent Orders
+              Недавние заказы
             </h3>
             <p className="text-sm text-muted-foreground">
-              Latest customer orders
+              Последние заказы клиентов
             </p>
           </div>
           <div className="space-y-4">
@@ -288,18 +332,8 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-semibold text-sm">{order.total}</p>
-                  <p
-                    className={`text-xs ${
-                      order.status === "Delivered"
-                        ? "text-success"
-                        : order.status === "Shipped"
-                        ? "text-info"
-                        : order.status === "Pending"
-                        ? "text-warning"
-                        : "text-primary"
-                    }`}
-                  >
-                    {order.status}
+                  <p className={`text-xs ${getStatusColor(order.status)}`}>
+                    {getStatusLabel(order.status)}
                   </p>
                 </div>
               </div>

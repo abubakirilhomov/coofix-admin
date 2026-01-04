@@ -105,12 +105,7 @@ export const authApi = {
 };
 
 export const statsApi = {
-  overview: () => apiRequest<{
-    totalProducts: number;
-    totalOrders: number;
-    newUsers: number;
-    revenue: number;
-  }>('/stats/overview'),
+  overview: () => apiRequest<OverviewStats>('/stats/overview'),
 
   sales: () => apiRequest<{ name: string; sales: number; orders: number }[]>(
     '/stats/sales'
@@ -438,4 +433,19 @@ export interface UsersResponse {
   total: number;
   page: number;
   pages: number;
+}
+
+export interface OverviewStats {
+  totalProducts: number;
+  totalOrders: number;
+  newUsers: {
+    value: number;
+    percent: number;
+    type: "positive" | "negative" | "neutral";
+  };
+  revenue: {
+    value: number;
+    percent: number;
+    type: "positive" | "negative" | "neutral";
+  };
 }

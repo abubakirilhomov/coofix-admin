@@ -82,7 +82,6 @@ const Dashboard = () => {
     queryKey: ["recent-orders"],
     queryFn: statsApi.recentOrders,
   });
-  console.log(salesData)
   return (
     <div className="space-y-8">
       <PageHeader

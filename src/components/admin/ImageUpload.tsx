@@ -1,12 +1,17 @@
 import { useState, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { uploadApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
+export interface ImageItem {
+  url: string;
+  publicId: string;
+}
+
 interface ImageUploadProps {
-  value: string[];
-  onChange: (urls: string[]) => void;
+  value: ImageItem[];
+  onChange: (images: ImageItem[]) => void;
   maxFiles?: number;
   className?: string;
 }
@@ -24,28 +29,32 @@ export const ImageUpload = ({
   const handleUpload = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) return;
+
       if (value.length + files.length > maxFiles) {
         toast({
-          title: 'Too many files',
-          description: `Maximum ${maxFiles} images allowed`,
+          title: 'Слишком много файлов',
+          description: `Максимум ${maxFiles} изображений`,
           variant: 'destructive',
         });
         return;
       }
 
       setIsUploading(true);
+
       try {
         const fileArray = Array.from(files);
-        const { urls } = await uploadApi.multiple(fileArray);
-        onChange([...value, ...urls]);
+        const { images } = await uploadApi.multiple(fileArray);
+
+        onChange([...value, ...images]);
+
         toast({
-          title: 'Upload successful',
-          description: `${urls.length} image(s) uploaded`,
+          title: 'Готово',
+          description: `Загружено изображений: ${images.length}`,
         });
-      } catch (error) {
+      } catch (err) {
         toast({
-          title: 'Upload failed',
-          description: 'Failed to upload images. Please try again.',
+          title: 'Ошибка загрузки',
+          description: 'Не удалось загрузить изображения',
           variant: 'destructive',
         });
       } finally {
@@ -58,9 +67,10 @@ export const ImageUpload = ({
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else {
       setDragActive(false);
     }
   }, []);
@@ -76,18 +86,17 @@ export const ImageUpload = ({
   );
 
   const removeImage = (index: number) => {
-    const newValue = [...value];
-    newValue.splice(index, 1);
-    onChange(newValue);
+    const newImages = [...value];
+    newImages.splice(index, 1);
+    onChange(newImages);
   };
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Upload area */}
       <div
         onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
         onDragOver={handleDrag}
+        onDragLeave={handleDrag}
         onDrop={handleDrop}
         className={cn(
           'relative border-2 border-dashed rounded-lg p-8 transition-colors',
@@ -102,47 +111,54 @@ export const ImageUpload = ({
           accept="image/*"
           multiple
           onChange={(e) => handleUpload(e.target.files)}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           disabled={isUploading || value.length >= maxFiles}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
+
         <div className="flex flex-col items-center justify-center gap-2 text-center">
           {isUploading ? (
-            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           ) : (
             <Upload className="h-10 w-10 text-muted-foreground" />
           )}
-          <div className="text-sm">
-            <span className="font-semibold text-primary">Click to upload</span>
-            <span className="text-muted-foreground"> or drag and drop</span>
-          </div>
+
+          <p className="text-sm">
+            <span className="font-semibold text-primary">
+              Нажмите для загрузки
+            </span>{' '}
+            или перетащите файлы
+          </p>
+
           <p className="text-xs text-muted-foreground">
-            PNG, JPG, WEBP up to 10MB ({value.length}/{maxFiles})
+            PNG, JPG, WEBP до 10MB ({value.length}/{maxFiles})
           </p>
         </div>
       </div>
 
-      {/* Preview grid */}
       {value.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {value.map((url, index) => (
+          {value.map((img, index) => (
             <div
-              key={index}
+              key={img.publicId}
               className="relative group aspect-square rounded-lg overflow-hidden bg-muted"
             >
               <img
-                src={url}
-                alt={`Upload ${index + 1}`}
+                src={img.url}
+                alt={`Image ${index + 1}`}
                 className="w-full h-full object-cover"
               />
+
               <button
+                type="button"
                 onClick={() => removeImage(index)}
                 className="absolute top-2 right-2 p-1 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="h-4 w-4" />
               </button>
+
               {index === 0 && (
-                <span className="absolute bottom-2 left-2 px-2 py-0.5 text-xs font-medium bg-primary text-primary-foreground rounded">
-                  Main
+                <span className="absolute bottom-2 left-2 px-2 py-0.5 text-xs bg-primary text-primary-foreground rounded">
+                  Главное
                 </span>
               )}
             </div>

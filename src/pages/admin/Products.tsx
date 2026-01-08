@@ -36,6 +36,9 @@ import {
   brandsApi,
   Product,
   ProductInput,
+  Category,
+  Brand,
+  ImageItem,
 } from '@/lib/api';
 import { ImageUpload } from '@/components/admin/ImageUpload';
 import { KeyValueEditor } from '@/components/admin/KeyValueEditor';
@@ -47,8 +50,8 @@ const DEFAULT_FORM = {
   oldPrice: '',
   category: '',
   brand: '',
-  images: [] as string[],
-  quantity: '',
+  images: [] as ImageItem[],
+  stock: '',
   isNew: false,
   isSale: false,
   characteristics: '',
@@ -89,7 +92,7 @@ const Products = () => {
   });
 
   const products = productsResponse?.products || [];
-
+  console.log('Products:', products);
   const createMutation = useMutation({
     mutationFn: (data: ProductInput) => productsApi.create(data),
     onSuccess: () => {
@@ -132,7 +135,7 @@ const Products = () => {
         <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
           {row.original.images?.[0] ? (
             <img
-              src={row.original.images[0]}
+              src={row.original.images[0]?.url}
               alt={row.original.name}
               className="w-full h-full object-cover"
             />
@@ -169,11 +172,11 @@ const Products = () => {
       ),
     },
     {
-      accessorKey: 'quantity',
+      accessorKey: 'stock',
       header: 'Остаток',
       cell: ({ row }) => (
-        <span className={row.original.quantity < 20 ? 'text-destructive font-medium' : ''}>
-          {row.original.quantity}
+        <span className={row.original.stock < 20 ? 'text-destructive font-medium' : ''}>
+          {row.original.stock}
         </span>
       ),
     },
@@ -222,7 +225,7 @@ const Products = () => {
       category: product.category._id,
       brand: product.brand._id,
       images: product.images || [],
-      quantity: product.quantity.toString(),
+      stock: product.stock.toString(),
       isNew: product.isNew || false,
       isSale: product.isSale || false,
       characteristics: product.characteristics
@@ -253,7 +256,7 @@ const Products = () => {
 
     const price = parseFloat(formData.price);
     const oldPrice = formData.oldPrice ? parseFloat(formData.oldPrice) : undefined;
-    const quantity = parseInt(formData.quantity) || 0;
+    const stock = parseInt(formData.stock) || 0;
 
     if (isNaN(price) || price <= 0) {
       toast({ title: 'Ошибка', description: 'Укажите корректную цену', variant: 'destructive' });
@@ -268,7 +271,7 @@ const Products = () => {
       category: formData.category,
       brand: formData.brand,
       images: formData.images,
-      quantity,
+      stock,
       isNew: formData.isNew,
       isSale: formData.isSale,
       characteristics: Object.keys(characteristics).length > 0 ? characteristics : undefined,
@@ -351,7 +354,7 @@ const Products = () => {
                     <SelectValue placeholder="Выберите категорию" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((c: any) => (
+                    {categories.map((c: Category) => (
                       <SelectItem key={c._id} value={c._id}>
                         {c.name}
                       </SelectItem>
@@ -367,7 +370,7 @@ const Products = () => {
                     <SelectValue placeholder="Выберите бренд" />
                   </SelectTrigger>
                   <SelectContent>
-                    {brands.map((b: any) => (
+                    {brands.map((b: Brand) => (
                       <SelectItem key={b._id} value={b._id}>
                         {b.name}
                       </SelectItem>
@@ -380,8 +383,8 @@ const Products = () => {
                 <Label>Количество на складе</Label>
                 <Input
                   type="number"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                   required
                 />
               </div>

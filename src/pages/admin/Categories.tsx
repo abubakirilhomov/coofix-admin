@@ -62,7 +62,6 @@ const Categories = () => {
       setIsLoading(false);
     }
   }, [toast]);
-
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);

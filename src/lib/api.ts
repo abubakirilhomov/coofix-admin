@@ -162,7 +162,7 @@ export const productsApi = {
   updateStock: (id: string, quantity: number) =>
     apiRequest<Product>(`/admin/products/${id}/stock`, {
       method: "PATCH",
-      body: JSON.stringify({ quantity }),
+      body: JSON.stringify({ stock: quantity }),
     }),
 };
 
@@ -255,7 +255,7 @@ export const uploadApi = {
     if (!response.ok) throw new Error("Upload failed");
     return response.json();
   },
-  multiple: async (files: File[]): Promise<{ urls: string[] }> => {
+  multiple: async (files: File[]): Promise<{ images: ImageItem[] }> => {
     const formData = new FormData();
     files.forEach((file) => formData.append("images", file));
 
@@ -339,9 +339,9 @@ export interface Product {
   oldPrice?: number;
   category: Category;
   brand: Brand;
-  images: string[];
+  images: ImageItem[];
   characteristics: Record<string, string>;
-  quantity: number;
+  stock: number;
   isNew: boolean;
   isSale: boolean;
   rating: number;
@@ -356,9 +356,9 @@ export interface ProductInput {
   oldPrice?: number;
   category: string;
   brand: string;
-  images: string[];
+  images: ImageItem[];
   characteristics: Record<string, string>;
-  quantity: number;
+  stock: number;
   isNew: boolean;
   isSale: boolean;
 }
@@ -435,17 +435,22 @@ export interface UsersResponse {
   pages: number;
 }
 
+export interface ImageItem {
+  url: string;
+  publicId: string;
+}
+
 export interface OverviewStats {
   totalProducts: number;
   totalOrders: number;
   newUsers: {
     value: number;
     percent: number;
-    type: "positive" | "negative" | "neutral";
+    type: 'positive' | 'negative' | 'neutral';
   };
   revenue: {
     value: number;
     percent: number;
-    type: "positive" | "negative" | "neutral";
+    type: 'positive' | 'negative' | 'neutral';
   };
 }

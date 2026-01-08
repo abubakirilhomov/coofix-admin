@@ -16,13 +16,13 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { title: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { title: 'Products', href: '/admin/products', icon: Package },
-  { title: 'Categories', href: '/admin/categories', icon: Layers },
-  { title: 'Brands', href: '/admin/brands', icon: Tag },
-  { title: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-  { title: 'Users', href: '/admin/users', icon: Users },
-  { title: 'Reviews', href: '/admin/reviews', icon: Star },
+  { title: 'Главная', href: '/admin', icon: LayoutDashboard },
+  { title: 'Товары', href: '/admin/products', icon: Package },
+  { title: 'Категории', href: '/admin/categories', icon: Layers },
+  { title: 'Бренды', href: '/admin/brands', icon: Tag },
+  { title: 'Заказы', href: '/admin/orders', icon: ShoppingCart },
+  { title: 'Пользователи', href: '/admin/users', icon: Users },
+  { title: 'Отзывы', href: '/admin/reviews', icon: Star },
 ];
 
 export const AdminSidebar = () => {
@@ -57,10 +57,10 @@ export const AdminSidebar = () => {
         {/* Logo */}
         <div className="p-6 border-b border-sidebar-border">
           <h1 className="text-xl font-bold text-sidebar-primary-foreground">
-            Admin Panel
+            Админ панель
           </h1>
           <p className="text-xs text-sidebar-foreground/60 mt-1">
-            E-Commerce Management
+            Управление магазином
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export const AdminSidebar = () => {
               {user?.name?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.name || 'Admin'}</p>
+              <p className="text-sm font-medium truncate">{user?.name || 'Админ'}</p>
               <p className="text-xs text-sidebar-foreground/60 truncate">{user?.email}</p>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const AdminSidebar = () => {
             className="flex items-center gap-3 w-full px-4 py-3 mt-2 rounded-lg text-sidebar-foreground/80 hover:bg-destructive/20 hover:text-destructive transition-colors"
           >
             <LogOut size={20} />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">Выйти</span>
           </button>
         </div>
       </aside>

@@ -11,6 +11,9 @@ import {
   setAccessToken,
   clearAccessToken,
   getAccessToken,
+  setUser as setStorageUser,
+  getUser as getStorageUser,
+  clearUser as clearStorageUser,
   User,
 } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -31,8 +34,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 🔄 Проверка сессии при старте
   useEffect(() => {
-    const loadUser = async () => {
+    const initAuth = async () => {
       const token = getAccessToken();
+      const storedUser = getStorageUser();
+
+      // Если есть токен и юзер в сторедже - сразу логиним
+      if (token && storedUser) {
+        setUser(storedUser);
+      }
+
       if (!token) {
         setIsLoading(false);
         return;
@@ -43,17 +53,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (response.success && response.user) {
           setUser(response.user);
+          setStorageUser(response.user); // Обновляем данные если изменились
         } else {
           clearAccessToken();
+          clearStorageUser();
+          setUser(null);
         }
       } catch (err) {
-        clearAccessToken();
+        // Если API упало, но у нас есть локальные данные - оставляем пользователя залогиненным
+        // Но если это 401 - api.ts уже почистит токен
+        if (!getAccessToken()) {
+          setUser(null);
+          clearStorageUser();
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUser();
+    initAuth();
   }, []);
 
   // 🔐 Login
@@ -67,8 +85,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Ошибка входа');
       }
 
-      // ✅ сохраняем ТОЛЬКО accessToken
+      // ✅ сохраняем и accessToken и user
       setAccessToken(response.accessToken);
+      setStorageUser(response.user);
       setUser(response.user);
 
       toast.success(`Добро пожаловать, ${response.user.name}!`);
@@ -88,6 +107,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // даже если запрос упал — чистим локально
     } finally {
       clearAccessToken();
+      clearStorageUser();
+
       setUser(null);
       toast.success('Вы вышли из аккаунта');
       window.location.href = '/login';

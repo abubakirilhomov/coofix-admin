@@ -15,6 +15,25 @@ export const clearAccessToken = () => {
 
 export const getAccessToken = () => accessToken;
 
+// User persistence
+export const setUser = (user: User) => {
+  localStorage.setItem("user", JSON.stringify(user));
+};
+
+export const getUser = (): User | null => {
+  const userStr = localStorage.getItem("user");
+  if (!userStr) return null;
+  try {
+    return JSON.parse(userStr);
+  } catch {
+    return null;
+  }
+};
+
+export const clearUser = () => {
+  localStorage.removeItem("user");
+};
+
 // API helper
 const apiRequest = async <T>(
   endpoint: string,

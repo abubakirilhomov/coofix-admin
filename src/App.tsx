@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Products";
 import Categories from "./pages/admin/Categories";
+import CategoriesTree from "./pages/admin/CategoriesTree";
 import Brands from "./pages/admin/Brands";
 import Orders from "./pages/admin/Orders";
 import Users from "./pages/admin/Users";
@@ -27,10 +28,10 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
-            
+
             {/* Redirect root to admin */}
             <Route path="/" element={<Navigate to="/admin" replace />} />
-            
+
             {/* Admin routes */}
             <Route
               path="/admin"
@@ -45,6 +46,14 @@ const App = () => (
               element={
                 <AdminLayout>
                   <Products />
+                </AdminLayout>
+              }
+            />
+            <Route
+              path="/admin/categories/tree"
+              element={
+                <AdminLayout>
+                  <CategoriesTree />
                 </AdminLayout>
               }
             />
@@ -88,7 +97,7 @@ const App = () => (
                 </AdminLayout>
               }
             />
-            
+
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>

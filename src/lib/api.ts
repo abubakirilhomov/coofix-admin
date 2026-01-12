@@ -188,6 +188,7 @@ export const productsApi = {
 // Categories API
 export const categoriesApi = {
   getAll: () => apiRequest<{ categories: Category[] }>("/categories"),
+  getTree: () => apiRequest<{ tree: Category[] }>("/categories/tree"),
   getBySlug: (slug: string) => apiRequest<Category>(`/categories/${slug}`),
   create: (data: CategoryInput) =>
     apiRequest<Category>("/categories", {
@@ -388,6 +389,7 @@ export interface Category {
   slug: string;
   image?: string;
   parent?: Category;
+  children?: Category[];
 }
 
 export interface CategoryInput {

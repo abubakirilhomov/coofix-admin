@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   X,
+  FolderOpen,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
@@ -19,6 +20,7 @@ const navItems = [
   { title: 'Главная', href: '/admin', icon: LayoutDashboard },
   { title: 'Товары', href: '/admin/products', icon: Package },
   { title: 'Категории', href: '/admin/categories', icon: Layers },
+  { title: 'Дерево', href: '/admin/categories/tree', icon: FolderOpen },
   { title: 'Бренды', href: '/admin/brands', icon: Tag },
   { title: 'Заказы', href: '/admin/orders', icon: ShoppingCart },
   { title: 'Пользователи', href: '/admin/users', icon: Users },

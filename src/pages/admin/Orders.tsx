@@ -95,7 +95,7 @@ const Orders = () => {
       accessorKey: 'total',
       header: 'Сумма',
       cell: ({ row }) => (
-        <span className="font-semibold">${row.original.total.toFixed(2)}</span>
+        <span className="font-semibold">₽{row.original.total.toFixed(2)}</span>
       ),
     },
     {
@@ -210,10 +210,10 @@ const Orders = () => {
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                       <div>
-                        <p className="font-medium text-sm">{item.product.name}</p>
+                        <p className="font-medium text-sm">{item?.product?.name || 'Название товара'}</p>
                         <p className="text-xs text-muted-foreground">Кол-во: {item.quantity}</p>
                       </div>
-                      <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-semibold">₽{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>

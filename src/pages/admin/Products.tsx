@@ -162,10 +162,10 @@ const Products = () => {
       header: 'Цена',
       cell: ({ row }) => (
         <div>
-          <p className="font-semibold">${row.original.price.toFixed(2)}</p>
+          <p className="font-semibold">₽{row.original.price.toFixed(2)}</p>
           {row.original.oldPrice && (
             <p className="text-xs text-muted-foreground line-through">
-              ${row.original.oldPrice.toFixed(2)}
+              ₽{row.original.oldPrice.toFixed(2)}
             </p>
           )}
         </div>

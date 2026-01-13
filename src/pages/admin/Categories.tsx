@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { DataTable } from '@/components/admin/DataTable';
-import { ImageUpload } from '@/components/admin/ImageUpload';
+import { ImageUpload, ImageItem } from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,7 +42,7 @@ const Categories = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    image: [] as string[],
+    image: [] as ImageItem[],
     parent: '',
   });
   const { toast } = useToast();
@@ -135,7 +135,7 @@ const Categories = () => {
     setEditingCategory(category);
     setFormData({
       name: category.name,
-      image: category.image ? [category.image] : [],
+      image: category.image ? [{ url: category.image, publicId: 'existing' }] : [],
       parent: category.parent?._id || '',
     });
     setIsDialogOpen(true);
@@ -178,7 +178,7 @@ const Categories = () => {
       setIsSubmitting(true);
       const data = {
         name: formData.name,
-        image: formData.image[0],
+        image: formData.image[0]?.url,
         parent: formData.parent && formData.parent !== 'none' ? formData.parent : undefined,
       };
 
@@ -270,7 +270,7 @@ const Categories = () => {
                 <Label>Изображение категории</Label>
                 <ImageUpload
                   value={formData.image}
-                  onChange={(urls) => setFormData({ ...formData, image: urls })}
+                  onChange={(images) => setFormData({ ...formData, image: images })}
                   maxFiles={1}
                 />
               </div>

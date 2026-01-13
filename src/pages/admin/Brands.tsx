@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { DataTable } from '@/components/admin/DataTable';
-import { ImageUpload } from '@/components/admin/ImageUpload';
+import { ImageUpload, ImageItem } from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +34,7 @@ const Brands = () => {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    logo: [] as string[],
+    logo: [] as ImageItem[],
   });
   const { toast } = useToast();
 
@@ -122,7 +122,7 @@ const Brands = () => {
     setEditingBrand(brand);
     setFormData({
       name: brand.name,
-      logo: brand.logo ? [brand.logo] : [],
+      logo: brand.logo ? [{ url: brand.logo, publicId: 'logo' }] : [],
     });
     setIsDialogOpen(true);
   };
@@ -163,7 +163,7 @@ const Brands = () => {
       setIsSubmitting(true);
       const data = {
         name: formData.name,
-        logo: formData.logo[0],
+        logo: formData.logo[0]?.url,
       };
 
       if (editingBrand) {

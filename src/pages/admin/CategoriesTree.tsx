@@ -36,8 +36,9 @@ import {
     DialogDescription
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { ImageUpload } from '@/components/admin/ImageUpload';
+import { ImageUpload, ImageItem } from '@/components/admin/ImageUpload';
 import { toast } from 'react-hot-toast';
+
 
 interface TreeNodeProps {
     category: Category;
@@ -95,7 +96,7 @@ export default function CategoriesTree() {
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
     // Form Data
-    const [formData, setFormData] = useState({ name: '', image: [] as string[] });
+    const [formData, setFormData] = useState({ name: '', image: [] as ImageItem[] });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Queries
@@ -167,7 +168,10 @@ export default function CategoriesTree() {
 
     const handleAction = (action: 'edit' | 'create_sub' | 'delete', category: Category) => {
         if (action === 'edit') {
-            setFormData({ name: category.name, image: category.image ? [category.image] : [] });
+            setFormData({
+                name: category.name,
+                image: category.image ? [{ url: category.image, publicId: category.image }] : []
+            });
             setModalState({ isOpen: true, mode: 'edit', category });
         } else if (action === 'create_sub') {
             setFormData({ name: '', image: [] });
@@ -195,7 +199,7 @@ export default function CategoriesTree() {
         try {
             const payload: any = {
                 name: formData.name,
-                image: formData.image[0]
+                image: formData.image[0]?.url
             };
 
             if (modalState.mode === 'create_sub') {
@@ -205,8 +209,6 @@ export default function CategoriesTree() {
             }
 
             if (modalState.mode === 'edit' && modalState.category) {
-                // For edit, keep existing parent unless we implement move logic (not requested yet)
-                // But API needs parent if it exists? Usually update(id, {name, image}) is enough if we don't change parent
                 await updateMutation.mutateAsync({ id: modalState.category._id, data: payload });
             } else {
                 await createMutation.mutateAsync(payload);

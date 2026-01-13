@@ -7,6 +7,7 @@ interface PageHeaderProps {
   description?: string;
   action?: {
     label: string;
+    icon?: ReactNode;
     onClick: () => void;
   };
   children?: ReactNode;
@@ -25,7 +26,7 @@ export const PageHeader = ({ title, description, action, children }: PageHeaderP
         {children}
         {action && (
           <Button onClick={action.onClick} className="gap-2">
-            <Plus className="h-4 w-4" />
+            {action.icon || <Plus className="h-4 w-4" />}
             {action.label}
           </Button>
         )}

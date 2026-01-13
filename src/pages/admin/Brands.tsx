@@ -34,7 +34,7 @@ const Brands = () => {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    logo: [] as ImageItem[],
+    image: [] as ImageItem[],
   });
   const { toast } = useToast();
 
@@ -64,9 +64,9 @@ const Brands = () => {
       header: 'Логотип',
       cell: ({ row }) => (
         <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-          {row.original.logo ? (
+          {row.original.image ? (
             <img
-              src={row.original.logo}
+              src={row.original.image.url}
               alt={row.original.name}
               className="w-full h-full object-cover"
             />
@@ -122,7 +122,7 @@ const Brands = () => {
     setEditingBrand(brand);
     setFormData({
       name: brand.name,
-      logo: brand.logo ? [{ url: brand.logo, publicId: 'logo' }] : [],
+      image: brand.image ? [brand.image] : [],
     });
     setIsDialogOpen(true);
   };
@@ -151,8 +151,9 @@ const Brands = () => {
     setEditingBrand(null);
     setFormData({
       name: '',
-      logo: [],
+      image: [],
     });
+
     setIsDialogOpen(true);
   };
 
@@ -163,7 +164,7 @@ const Brands = () => {
       setIsSubmitting(true);
       const data = {
         name: formData.name,
-        logo: formData.logo[0]?.url,
+        image: formData.image.length ? formData.image[0] : null,
       };
 
       if (editingBrand) {
@@ -231,8 +232,8 @@ const Brands = () => {
               <div>
                 <Label>Логотип бренда</Label>
                 <ImageUpload
-                  value={formData.logo}
-                  onChange={(urls) => setFormData({ ...formData, logo: urls })}
+                  value={formData.image}
+                  onChange={(urls) => setFormData({ ...formData, image: urls })}
                   maxFiles={1}
                 />
               </div>

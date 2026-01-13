@@ -387,14 +387,14 @@ export interface Category {
   _id: string;
   name: string;
   slug: string;
-  image?: string;
+  image?: ImageItem;
   parent?: Category;
   children?: Category[];
 }
 
 export interface CategoryInput {
   name: string;
-  image?: string;
+  image?: ImageItem;
   parent?: string;
 }
 
@@ -402,12 +402,12 @@ export interface Brand {
   _id: string;
   name: string;
   slug: string;
-  logo?: string;
+  image?: ImageItem;
 }
 
 export interface BrandInput {
   name: string;
-  logo?: string;
+  image?: ImageItem;
 }
 
 export interface Order {

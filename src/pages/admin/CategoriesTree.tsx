@@ -170,7 +170,7 @@ export default function CategoriesTree() {
         if (action === 'edit') {
             setFormData({
                 name: category.name,
-                image: category.image ? [{ url: category.image, publicId: category.image }] : []
+                image: category.image ? [category.image] : []
             });
             setModalState({ isOpen: true, mode: 'edit', category });
         } else if (action === 'create_sub') {
@@ -199,7 +199,7 @@ export default function CategoriesTree() {
         try {
             const payload: any = {
                 name: formData.name,
-                image: formData.image[0]?.url
+                image: formData.image[0]
             };
 
             if (modalState.mode === 'create_sub') {
@@ -361,7 +361,7 @@ const CategoryNode = ({ category, level, expandedIds, toggleExpand, onAction }: 
 
                     <div className="w-8 h-8 shrink-0 rounded bg-muted flex items-center justify-center overflow-hidden border">
                         {category.image ? (
-                            <img src={category.image} alt="" className="w-full h-full object-cover" />
+                            <img src={category.image.url} alt="" className="w-full h-full object-cover" />
                         ) : (
                             <Folder className="h-4 w-4 text-muted-foreground/50" />
                         )}

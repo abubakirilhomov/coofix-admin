@@ -74,7 +74,7 @@ const Categories = () => {
         <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
           {row.original.image ? (
             <img
-              src={row.original.image}
+              src={row.original.image.url}
               alt={row.original.name}
               className="w-full h-full object-cover"
             />
@@ -135,7 +135,7 @@ const Categories = () => {
     setEditingCategory(category);
     setFormData({
       name: category.name,
-      image: category.image ? [{ url: category.image, publicId: 'existing' }] : [],
+      image: category.image ? [category.image] : [],
       parent: category.parent?._id || '',
     });
     setIsDialogOpen(true);
@@ -178,7 +178,7 @@ const Categories = () => {
       setIsSubmitting(true);
       const data = {
         name: formData.name,
-        image: formData.image[0]?.url,
+        image: formData.image[0],
         parent: formData.parent && formData.parent !== 'none' ? formData.parent : undefined,
       };
 

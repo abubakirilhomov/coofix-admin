@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Brand, brandsApi } from '@/lib/api';
-
 interface BrandWithCount extends Brand {
   productCount?: number;
 }

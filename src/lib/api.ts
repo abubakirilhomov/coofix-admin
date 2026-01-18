@@ -100,6 +100,15 @@ export const authApi = {
       }
     ),
 
+  googleLogin: (idToken: string) =>
+    apiRequest<{ success: boolean; token: string; user: User }>(
+      "/auth/google",
+      {
+        method: "POST",
+        body: JSON.stringify({ idToken }),
+      }
+    ),
+
   register: (name: string, email: string, password: string) =>
     apiRequest<{ success: boolean; user: User }>(
       "/auth/register",
@@ -474,4 +483,28 @@ export interface OverviewStats {
     percent: number;
     type: 'positive' | 'negative' | 'neutral';
   };
+}
+
+// Wholesale API
+export const wholesaleApi = {
+  getAll: () => apiRequest<{ success: boolean; data: WholesaleApplication[] }>("/wholesale"),
+  updateStatus: (id: string, status: WholesaleStatus) =>
+    apiRequest<{ success: boolean; data: WholesaleApplication }>(`/wholesale/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+};
+
+export type WholesaleStatus = "new" | "processed" | "rejected";
+
+export interface WholesaleApplication {
+  _id: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  comment?: string;
+  file?: string;
+  status: WholesaleStatus;
+  createdAt: string;
 }

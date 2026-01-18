@@ -36,6 +36,19 @@ const statusConfig: Record<string, { label: string; className: string }> = {
     label: 'Inactive',
     className: 'bg-muted text-muted-foreground border-border',
   },
+  // Wholesale statuses
+  new: {
+    label: 'Новая',
+    className: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  },
+  processed: {
+    label: 'Обработана',
+    className: 'bg-green-500/10 text-green-500 border-green-500/20',
+  },
+  rejected: {
+    label: 'Отклонена',
+    className: 'bg-red-500/10 text-red-500 border-red-500/20',
+  },
 };
 
 export const StatusBadge = ({ status, className }: StatusBadgeProps) => {

@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   FolderOpen,
+  Briefcase,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
@@ -23,6 +24,7 @@ const navItems = [
   { title: 'Дерево', href: '/admin/categories/tree', icon: FolderOpen },
   { title: 'Бренды', href: '/admin/brands', icon: Tag },
   { title: 'Заказы', href: '/admin/orders', icon: ShoppingCart },
+  { title: 'Оптовики', href: '/admin/wholesale', icon: Briefcase },
   { title: 'Пользователи', href: '/admin/users', icon: Users },
   { title: 'Отзывы', href: '/admin/reviews', icon: Star },
 ];

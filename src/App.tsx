@@ -12,12 +12,13 @@ import Categories from "./pages/admin/Categories";
 import CategoriesTree from "./pages/admin/CategoriesTree";
 import Brands from "./pages/admin/Brands";
 import Orders from "./pages/admin/Orders";
+import Wholesales from "./pages/admin/Wholesales";
 import Users from "./pages/admin/Users";
 import Reviews from "./pages/admin/Reviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
+//asd
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -26,13 +27,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
             <Route path="/login" element={<Login />} />
-
-            {/* Redirect root to admin */}
             <Route path="/" element={<Navigate to="/admin" replace />} />
-
-            {/* Admin routes */}
             <Route
               path="/admin"
               element={
@@ -82,6 +78,14 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/wholesale"
+              element={
+                <AdminLayout>
+                  <Wholesales />
+                </AdminLayout>
+              }
+            />
+            <Route
               path="/admin/users"
               element={
                 <AdminLayout>
@@ -98,7 +102,6 @@ const App = () => (
               }
             />
 
-            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

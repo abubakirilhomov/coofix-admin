@@ -23,6 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -99,6 +100,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // 🌐 Google Login
+  const googleLogin = async () => {
+    try {
+      setIsLoading(true);
+      const { signInWithPopup, GoogleAuthProvider } = await import("firebase/auth");
+      const { auth, googleProvider } = await import("@/lib/firebase");
+
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      const response = await authApi.googleLogin(idToken);
+
+      if (!response.success) {
+        throw new Error('Google Sign-In Failed on Backend');
+      }
+
+      setAccessToken(response.token);
+      setStorageUser(response.user);
+      setUser(response.user);
+
+      toast.success(`Добро пожаловать, ${response.user.name}!`);
+    } catch (error: any) {
+      console.error("Google Auth Error:", error);
+      toast.error('Ошибка авторизации через Google');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 🚪 Logout
   const logout = async () => {
     try {
@@ -122,6 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!user,
         isLoading,
         login,
+        googleLogin,
         logout,
       }}
     >

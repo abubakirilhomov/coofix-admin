@@ -54,6 +54,7 @@ const DEFAULT_FORM = {
   stock: '',
   isNew: false,
   isSale: false,
+  isHit: false,
   characteristics: '',
 };
 
@@ -200,6 +201,7 @@ const Products = () => {
         <div className="flex gap-2">
           {row.original.isNew && <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">New</span>}
           {row.original.isSale && <span className="px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded">Sale</span>}
+          {row.original.isHit && <span className="px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded">Hit</span>}
         </div>
       ),
     },
@@ -241,6 +243,7 @@ const Products = () => {
       stock: product.stock.toString(),
       isNew: product.isNew || false,
       isSale: product.isSale || false,
+      isHit: product.isHit || false,
       characteristics: product.characteristics
         ? JSON.stringify(product.characteristics, null, 2)
         : '',
@@ -287,6 +290,7 @@ const Products = () => {
       stock,
       isNew: formData.isNew,
       isSale: formData.isSale,
+      isHit: formData.isHit,
       characteristics: Object.keys(characteristics).length > 0 ? characteristics : undefined,
     };
 
@@ -413,6 +417,10 @@ const Products = () => {
                 <div className="flex items-center gap-2">
                   <Switch checked={formData.isSale} onCheckedChange={(v) => setFormData({ ...formData, isSale: v })} />
                   <Label>Акция</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={formData.isHit} onCheckedChange={(v) => setFormData({ ...formData, isHit: v })} />
+                  <Label>Хит сезона</Label>
                 </div>
               </div>
 

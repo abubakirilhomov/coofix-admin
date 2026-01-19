@@ -444,6 +444,7 @@ export interface Product {
   stock: number;
   isNew: boolean;
   isSale: boolean;
+  isHit: boolean;
   rating: number;
   reviewCount: number;
   createdAt: string;
@@ -461,6 +462,7 @@ export interface ProductInput {
   stock: number;
   isNew: boolean;
   isSale: boolean;
+  isHit: boolean;
 }
 
 export interface Category {

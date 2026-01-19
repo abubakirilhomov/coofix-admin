@@ -34,9 +34,19 @@ interface CategoryWithCount extends Category {
   productCount?: number;
 }
 
+import { PaginationState } from '@tanstack/react-table';
+
+// ...
+
 const Categories = () => {
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+  const [pageCount, setPageCount] = useState(0);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -50,8 +60,12 @@ const Categories = () => {
   const loadCategories = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await categoriesApi.getAll();
+      const data = await categoriesApi.getAll({
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      });
       setCategories(data.categories || []);
+      setPageCount(data.pages || 0);
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -61,7 +75,8 @@ const Categories = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [toast, pagination]);
+
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
@@ -222,6 +237,9 @@ const Categories = () => {
         searchKey="name"
         searchPlaceholder="Поиск категорий..."
         isLoading={isLoading}
+        pageCount={pageCount}
+        pagination={pagination}
+        onPaginationChange={setPagination}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

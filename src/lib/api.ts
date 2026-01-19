@@ -159,7 +159,10 @@ export const productsApi = {
       pages: number;
     }>(
       `/products?${new URLSearchParams(
-        params as Record<string, string>
+        Object.entries(params || {}).reduce((acc, [key, value]) => {
+          if (value !== undefined) acc[key] = String(value);
+          return acc;
+        }, {} as Record<string, string>)
       ).toString()}`
     ),
   getBySlug: (slug: string) => apiRequest<Product>(`/products/${slug}`),
@@ -196,7 +199,23 @@ export const productsApi = {
 
 // Categories API
 export const categoriesApi = {
-  getAll: () => apiRequest<{ categories: Category[] }>("/categories"),
+  getAll: (params?: { page?: number; limit?: number }) =>
+    apiRequest<{
+      categories: Category[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(
+      `/categories?${new URLSearchParams(
+        Object.entries(params || {}).reduce(
+          (acc, [key, value]) => {
+            if (value !== undefined) acc[key] = String(value);
+            return acc;
+          },
+          {} as Record<string, string>
+        )
+      ).toString()}`
+    ),
   getTree: () => apiRequest<{ tree: Category[] }>("/categories/tree"),
   getBySlug: (slug: string) => apiRequest<Category>(`/categories/${slug}`),
   create: (data: CategoryInput) =>
@@ -215,7 +234,23 @@ export const categoriesApi = {
 
 // Brands API
 export const brandsApi = {
-  getAll: () => apiRequest<{ brands: Brand[] }>("/brands"),
+  getAll: (params?: { page?: number; limit?: number }) =>
+    apiRequest<{
+      brands: Brand[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(
+      `/brands?${new URLSearchParams(
+        Object.entries(params || {}).reduce(
+          (acc, [key, value]) => {
+            if (value !== undefined) acc[key] = String(value);
+            return acc;
+          },
+          {} as Record<string, string>
+        )
+      ).toString()}`
+    ),
   getBySlug: (slug: string) => apiRequest<Brand>(`/brands/${slug}`),
   create: (data: BrandInput) =>
     apiRequest<Brand>("/brands", {
@@ -233,7 +268,23 @@ export const brandsApi = {
 
 // Orders API
 export const ordersApi = {
-  getAll: () => apiRequest<{ orders: Order[] }>("/orders"),
+  getAll: (params?: { page?: number; limit?: number; search?: string }) =>
+    apiRequest<{
+      orders: Order[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(
+      `/orders?${new URLSearchParams(
+        Object.entries(params || {}).reduce(
+          (acc, [key, value]) => {
+            if (value !== undefined) acc[key] = String(value);
+            return acc;
+          },
+          {} as Record<string, string>
+        )
+      ).toString()}`
+    ),
   getMy: () => apiRequest<{ orders: Order[] }>("/orders/my"),
   create: (data: { address: string; phone: string }) =>
     apiRequest<Order>("/orders", {
@@ -249,7 +300,27 @@ export const ordersApi = {
 
 // Reviews API
 export const reviewsApi = {
-  getAll: () => apiRequest<{ reviews: Review[] }>("/admin/reviews"),
+  getAll: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) =>
+    apiRequest<{
+      reviews: Review[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(
+      `/admin/reviews?${new URLSearchParams(
+        Object.entries(params || {}).reduce(
+          (acc, [key, value]) => {
+            if (value !== undefined) acc[key] = String(value);
+            return acc;
+          },
+          {} as Record<string, string>
+        )
+      ).toString()}`
+    ),
   getByProduct: (productId: string) =>
     apiRequest<{ reviews: Review[] }>(`/admin/reviews/${productId}`),
   create: (data: { productId: string; rating: number; text: string }) =>
@@ -487,12 +558,31 @@ export interface OverviewStats {
 
 // Wholesale API
 export const wholesaleApi = {
-  getAll: () => apiRequest<{ success: boolean; data: WholesaleApplication[] }>("/wholesale"),
+  getAll: (params?: { page?: number; limit?: number }) =>
+    apiRequest<{
+      data: WholesaleApplication[];
+      total: number;
+      page: number;
+      pages: number;
+    }>(
+      `/wholesale?${new URLSearchParams(
+        Object.entries(params || {}).reduce(
+          (acc, [key, value]) => {
+            if (value !== undefined) acc[key] = String(value);
+            return acc;
+          },
+          {} as Record<string, string>
+        )
+      ).toString()}`
+    ),
   updateStatus: (id: string, status: WholesaleStatus) =>
-    apiRequest<{ success: boolean; data: WholesaleApplication }>(`/wholesale/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
+    apiRequest<{ success: boolean; data: WholesaleApplication }>(
+      `/wholesale/${id}/status`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }
+    ),
 };
 
 export type WholesaleStatus = "new" | "processed" | "rejected";

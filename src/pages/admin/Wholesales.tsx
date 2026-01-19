@@ -35,9 +35,19 @@ const statusOptions = [
     { value: 'rejected', label: 'Отклонена', icon: XCircle },
 ];
 
+import { PaginationState } from '@tanstack/react-table';
+
+// ...
+
 const Wholesales = () => {
     const [applications, setApplications] = useState<WholesaleApplication[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 20,
+    });
+    const [pageCount, setPageCount] = useState(0);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState<WholesaleApplication | null>(null);
@@ -47,8 +57,12 @@ const Wholesales = () => {
     const loadApplications = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await wholesaleApi.getAll();
+            const response = await wholesaleApi.getAll({
+                page: pagination.pageIndex + 1,
+                limit: pagination.pageSize,
+            });
             setApplications(response.data || []);
+            setPageCount(response.pages || 0);
         } catch (error) {
             toast({
                 title: 'Ошибка',
@@ -58,7 +72,7 @@ const Wholesales = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [toast]);
+    }, [toast, pagination]);
 
     useEffect(() => {
         loadApplications();
@@ -188,6 +202,9 @@ const Wholesales = () => {
                 searchKey="name"
                 searchPlaceholder="Поиск по имени..."
                 isLoading={isLoading}
+                pageCount={pageCount}
+                pagination={pagination}
+                onPaginationChange={setPagination}
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

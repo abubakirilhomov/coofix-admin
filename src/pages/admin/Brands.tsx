@@ -25,9 +25,19 @@ interface BrandWithCount extends Brand {
   productCount?: number;
 }
 
+import { PaginationState } from '@tanstack/react-table';
+
+// ...
+
 const Brands = () => {
   const [brands, setBrands] = useState<BrandWithCount[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+  const [pageCount, setPageCount] = useState(0);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
@@ -40,8 +50,12 @@ const Brands = () => {
   const loadBrands = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await brandsApi.getAll();
+      const data = await brandsApi.getAll({
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      });
       setBrands(data.brands || []);
+      setPageCount(data.pages || 0);
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -51,7 +65,7 @@ const Brands = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [toast, pagination]);
 
   useEffect(() => {
     loadBrands();
@@ -206,6 +220,9 @@ const Brands = () => {
         searchKey="name"
         searchPlaceholder="Поиск брендов..."
         isLoading={isLoading}
+        pageCount={pageCount}
+        pagination={pagination}
+        onPaginationChange={setPagination}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

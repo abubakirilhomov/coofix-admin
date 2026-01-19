@@ -21,9 +21,19 @@ import { useToast } from '@/hooks/use-toast';
 
 import { Review, reviewsApi } from '@/lib/api';
 
+import { PaginationState } from '@tanstack/react-table';
+
+// ...
+
 const Reviews = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+  const [pageCount, setPageCount] = useState(0);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
@@ -33,8 +43,12 @@ const Reviews = () => {
   const loadReviews = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await reviewsApi.getAll();
+      const data = await reviewsApi.getAll({
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      });
       setReviews(data.reviews || []);
+      setPageCount(data.pages || 0);
     } catch (error) {
       toast({
         title: 'Ошибка',
@@ -44,7 +58,7 @@ const Reviews = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [toast, pagination]);
 
   useEffect(() => {
     loadReviews();
@@ -182,6 +196,9 @@ const Reviews = () => {
         data={reviews}
         searchPlaceholder="Поиск отзывов..."
         isLoading={isLoading}
+        pageCount={pageCount}
+        pagination={pagination}
+        onPaginationChange={setPagination}
       />
 
       {/* View Dialog */}

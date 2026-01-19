@@ -57,9 +57,19 @@ const DEFAULT_FORM = {
   characteristics: '',
 };
 
+import { PaginationState } from '@tanstack/react-table';
+
+// ... (existing imports)
+
 const Products = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Pagination state
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -74,11 +84,13 @@ const Products = () => {
   }, [isDialogOpen]);
 
   const { data: productsResponse, isLoading: productsLoading } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: () => productsApi.getAll(),
+    queryKey: ['admin-products', pagination],
+    queryFn: () => productsApi.getAll({
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize
+    }),
   });
 
-  // Исправлено: скорее всего API возвращает просто массив, а не { categories: [...] }
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: categoriesApi.getAll,
@@ -92,7 +104,8 @@ const Products = () => {
   });
 
   const products = productsResponse?.products || [];
-  console.log('Products:', products);
+  const pageCount = productsResponse?.pages || 0;
+
   const createMutation = useMutation({
     mutationFn: (data: ProductInput) => productsApi.create(data),
     onSuccess: () => {
@@ -298,6 +311,9 @@ const Products = () => {
         searchKey="name"
         searchPlaceholder="Поиск товаров..."
         isLoading={productsLoading}
+        pageCount={pageCount}
+        pagination={pagination}
+        onPaginationChange={setPagination}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
